@@ -20,10 +20,14 @@
 
 import Foundation
 
-public func toRef<T>(_ t: T) -> ((inout T) -> Void) -> T {
-    return { apply in
-        var copy = t
-        apply(&copy)
-        return copy
-    }
+public func flatMap<S, Segment>(
+    _ transform: @escaping (S.Element) async -> Segment
+) -> (S) -> AsyncFlatMapSequence<S, Segment> where S: AsyncSequence, Segment: AsyncSequence {
+    return { asyncColl in asyncColl.flatMap(transform) }
+}
+
+public func flatMap<S, Segment>(
+    _ transform: @escaping (S.Element) async throws -> Segment
+) -> (S) throws -> AsyncThrowingFlatMapSequence<S, Segment> where S: AsyncSequence, Segment: AsyncSequence {
+    return { asyncColl in asyncColl.flatMap(transform) }
 }

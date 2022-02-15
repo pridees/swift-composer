@@ -21,20 +21,14 @@
 import Foundation
 
 @discardableResult
-public func append<S: RangeReplaceableCollection, T>(_ value: T) -> (inout S) -> S
+public func append<S: RangeReplaceableCollection, T>(_ value: T) -> (inout S) -> Void
 where S.Element == T {
-    return {
-        $0.append(value)
-        return $0
-    }
+    return { $0.append(value) }
 }
 
 @discardableResult
-public func append<S: RangeReplaceableCollection>(_ sequence: S) -> (inout S) -> S {
-    return {
-        $0.append(contentsOf: sequence)
-        return $0
-    }
+public func append<S: RangeReplaceableCollection>(_ sequence: S) -> (inout S) -> Void {
+    return { $0.append(contentsOf: sequence) }
 }
 
 public func filter<S: RangeReplaceableCollection>(_ predicate: @escaping (S.Element) throws -> Bool) -> (S) throws -> S {
@@ -44,22 +38,23 @@ public func filter<S: RangeReplaceableCollection>(_ predicate: @escaping (S.Elem
 }
 
 @discardableResult
-public func insert<S: RangeReplaceableCollection>(_ newElement: S.Element, at index: S.Index) -> (inout S) -> S {
-    return {
-        $0.insert(newElement, at: index)
-        return $0
-    }
+public func insert<S: RangeReplaceableCollection>(_ newElement: S.Element, at index: S.Index) -> (inout S) -> Void {
+    return { $0.insert(newElement, at: index) }
+}
+
+public func removeLast<S: RangeReplaceableCollection & BidirectionalCollection>(_ sequence: inout S) -> Void {
+    _ = sequence.popLast()
 }
 
 @discardableResult
 public func popLast<S: RangeReplaceableCollection & BidirectionalCollection>(_ sequence: inout S) -> S.Element? {
-    sequence.popLast()
+   sequence.popLast()
 }
 
-@discardableResult
-public func popLast<S: RangeReplaceableCollection & BidirectionalCollection>(_ sequence: inout S) -> S.Element? where S.SubSequence == S {
-    sequence.popLast()
-}
+//@discardableResult
+//public func popLast<S: RangeReplaceableCollection & BidirectionalCollection>(_ sequence: inout S) -> S.Element? where S.SubSequence == S {
+//    sequence.popLast()
+//}
 
 @discardableResult
 public func popFirst<S: RangeReplaceableCollection>(_ sequence: inout S) -> S.Element? where S.SubSequence == S {
@@ -67,6 +62,6 @@ public func popFirst<S: RangeReplaceableCollection>(_ sequence: inout S) -> S.El
 }
 
 @discardableResult
-public func remove<S: RangeReplaceableCollection>(at index: S.Index) -> (inout S) -> S.Element {
-    return { $0.remove(at: index) }
+public func remove<S: RangeReplaceableCollection>(at index: S.Index) -> (inout S) -> Void {
+    return { _ = $0.remove(at: index) }
 }
