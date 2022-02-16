@@ -33,7 +33,7 @@ public func zip<R1, R2, T, E: Error>(
     return { r1, r2 in zip(r1, r2).map(transform) }
 }
 
-public func zip3<R1, R2, R3, E: Error>(
+public func zip<R1, R2, R3, E: Error>(
     _ r1: Result<R1, E>,
     _ r2: Result<R2, E>,
     _ r3: Result<R3, E>
@@ -41,15 +41,15 @@ public func zip3<R1, R2, R3, E: Error>(
     zip(zip(r1, r2), r3).map { ($0.0, $0.1, $1) }
 }
 
-public func zip3With<R1, R2, R3, T, E: Error>(
-    transform: @escaping (R1, R2, R3) -> T
+public func zip<R1, R2, R3, T, E: Error>(
+    with transform: @escaping (R1, R2, R3) -> T
 )
 -> (Result<R1, E>, Result<R2, E>, Result<R3, E>)
 -> Result<T, E> {
-    return { r1, r2, r3 in zip3(r1, r2, r3).map(transform) }
+    return { r1, r2, r3 in zip(r1, r2, r3).map(transform) }
 }
     
-public func zip4<R1, R2, R3, R4, E: Error>(
+public func zip<R1, R2, R3, R4, E: Error>(
     _ r1: Result<R1, E>,
     _ r2: Result<R2, E>,
     _ r3: Result<R3, E>,
@@ -58,10 +58,10 @@ public func zip4<R1, R2, R3, R4, E: Error>(
     zip(zip(r1, r2), zip(r3, r4 )).map { ($0.0, $0.1, $1.0, $1.1) }
 }
 
-public func zip4With<R1, R2, R3, R4, T, E: Error>(
+public func zip<R1, R2, R3, R4, T, E: Error>(
     with transform: @escaping (R1, R2, R3, R4) -> T
 )
 -> (Result<R1, E>, Result<R2, E>, Result<R3, E>, Result<R4, E>)
 -> Result<T, E> {
-    return { r1, r2, r3, r4 in zip4(r1, r2, r3, r4).map(transform) }
+    return { r1, r2, r3, r4 in zip(r1, r2, r3, r4).map(transform) }
 }
