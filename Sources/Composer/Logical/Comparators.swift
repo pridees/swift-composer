@@ -28,10 +28,10 @@ public func lessEq<T: Comparable>(_ value: T) -> (T) -> Bool {
     return { $0 <= value }
 }
 
-public func more<T: Comparable>(_ value: T) -> (T) -> Bool {
+public func greater<T: Comparable>(_ value: T) -> (T) -> Bool {
     return { $0 > value }
 }
 
-public func moreEq<T: Comparable>(_ value: T) -> (T) -> Bool {
+public func greaterEq<T: Comparable>(_ value: T) -> (T) -> Bool {
     return { $0 >= value }
 }
