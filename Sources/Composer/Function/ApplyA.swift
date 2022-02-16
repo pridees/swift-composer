@@ -26,41 +26,66 @@ precedencegroup SingleTypeComposition {
 
 infix operator <> : SingleTypeComposition
 
-public func <> <A>(f: @escaping (A) -> A, g: @escaping (A) -> A) -> (A) -> A {
+// MARK: - Immutable Apply Operator
+
+public func <> <A>(_ f: @escaping (A) -> A, _ g: @escaping (A) -> A) -> (A) -> A {
     return f >>> g
 }
 
-public func <> <A>(f: @escaping (A) throws -> A, g: @escaping (A) throws -> A) -> (A) throws -> A {
+public func <> <A>(_ f: @escaping (A) throws -> A, _ g: @escaping (A) throws -> A) -> (A) throws -> A {
     return f >>> g
 }
 
-public func <> <A>(f: @escaping (inout A) -> Void, g: @escaping (inout A) -> Void) -> (inout A) -> Void {
+// MARK: - InOut Apply Operator
+
+public func <> <A>(_ f: @escaping (inout A) -> Void, _ g: @escaping (inout A) -> Void) -> (inout A) -> Void {
     return { a in
         f(&a)
         g(&a)
     }
 }
 
-public func <> <A: AnyObject>(_ f: @escaping (A) -> Void, _ g: @escaping (A) -> Void) -> (A) -> Void {
+public func <> <A>(
+    f: @escaping (inout A) throws -> Void,
+    g: @escaping (inout A) throws -> Void
+) -> (inout A) throws -> Void {
+    return { a in
+        try f(&a)
+        try g(&a)
+    }
+}
+
+// MARK: - AnyObject Apply Operator
+
+public func <> <A: AnyObject>(
+    _ f: @escaping (A) -> Void,
+    _ g: @escaping (A) -> Void
+) -> (A) -> Void {
     return { a in
         f(a)
         g(a)
     }
 }
 
+public func <> <A: AnyObject>(
+    _ f: @escaping (A) throws -> Void,
+    _ g: @escaping (A) throws -> Void
+) -> (A) throws -> Void {
+    return { a in
+        try f(a)
+        try g(a)
+    }
+}
+
+// MARK: - Immutable Apply
+
+@inlinable
 public func apply<A>(_ funcs: ((A) -> A)...) -> (A) -> A {
     return { element in
         funcs.reduce(element) { el, transform in transform(el) }
     }
 }
 
-public func apply<A>(_ funcs: [(A) -> A]) -> (A) -> A {
-    return { element in
-        funcs.reduce(element) { el, transform in transform(el) }
-    }
-}
-
-/// Apply vararg funcs
 @inlinable
 public func apply<A>(_ funcs: ((A) throws -> A)...) -> (A) throws -> A {
     return { element in
@@ -68,32 +93,33 @@ public func apply<A>(_ funcs: ((A) throws -> A)...) -> (A) throws -> A {
     }
 }
 
-/// Apply func sequence
-@inlinable
-public func apply<A>(_ funcs: [(A) throws -> A]) -> (A) throws -> A {
-    return { element in
-        try funcs.reduce(element) { el, transform in try transform(el) }
-    }
-}
+// MARK: - InOut Apply
 
+@inlinable
 public func apply<A>(_ funcs: ((inout A) -> Void)...) -> (inout A) -> Void {
     return { element in
         funcs.forEach { $0(&element) }
     }
 }
 
+
+@inlinable
 public func apply<A>(_ funcs: ((inout A) throws -> Void)...) -> (inout A) throws -> Void {
     return { element in
         try funcs.forEach { try $0(&element) }
     }
 }
 
+// MARK: - AnyObject Apply
+
+@inlinable
 public func apply<A: AnyObject>(_ funcs: ((A) -> Void)...) -> (A) -> Void {
     return { classObject in
         funcs.forEach { $0(classObject) }
     }
 }
 
+@inlinable
 public func apply<A: AnyObject>(_ funcs: ((A) throws -> Void)...) -> (A) throws -> Void {
     return { classObject in
        try funcs.forEach { try $0(classObject) }
