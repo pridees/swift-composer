@@ -20,29 +20,16 @@
 
 import Foundation
 
-public func sort<T: Comparable>(_ comparator: @escaping (T, T) -> Bool) -> (inout [T]) -> Void {
-    return { collection in collection.sort(by: comparator)}
+public func combine<T, R>(_ transform: @escaping (T, T) -> R) -> (T, T) -> R {
+    return { transform($0, $1) }
 }
 
-public func sort<T: Comparable>(_ sequence: inout [T]) -> Void {
-    return sort(<)(&sequence)
+public func combineWith<T, V, R>(_ getter: @escaping  (T) -> V, _ transform: @escaping  (V, V) -> R)
+-> (T, T) -> R {
+    return { transform(getter($0), getter($1)) }
 }
 
-public func sortBy<Root, Value: Comparable>(_ keyPath: KeyPath<Root, Value>, _ comparator: @escaping (Value, Value) -> Bool)
--> (inout [Root]) -> Void {
-    return { $0.sort(by: combineBy(keyPath, comparator)) }
+public func combineBy<T, V, R>(_ keyPath: KeyPath<T, V>, _ transform: @escaping  (V, V) -> R)
+-> (T, T) -> R {
+    combineWith(get(keyPath), transform)
 }
-
-public func sorted<T: Comparable>(_ comparator: @escaping (T, T) -> Bool) -> ([T]) -> [T] {
-    return { collection in collection.sorted(by: comparator)}
-}
-
-public func sorted<T: Comparable>(_ sequence: [T]) -> [T] {
-    return sorted(<)(sequence)
-}
-
-public func sortedBy<Root, Value: Comparable>(_ keyPath: KeyPath<Root, Value>, _ comparator: @escaping (Value, Value) -> Bool)
--> ([Root]) -> [Root] {
-    return { $0.sorted(by: combineBy(keyPath, comparator)) }
-}
-
