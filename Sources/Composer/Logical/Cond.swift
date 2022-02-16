@@ -18,6 +18,27 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
+public func cond<T1, T2>(_ conditions: [((T1) -> Bool, T2)]) -> (T1) -> T2? {
+    return { value in
+        for (predicate, result) in conditions {
+            guard predicate(value) else { continue }
+            return result
+        }
+        return nil
+    }
+}
+
+public func cond<T1, T2>(_ conditions: [((T1) -> Bool, T2)], `default`: T2) -> (T1) -> T2 {
+    return { value in
+        for (predicate, result) in conditions {
+            guard predicate(value) else { continue }
+            return result
+        }
+        return `default`
+    }
+}
+
+
 public func cond<T1, T2>(_ conditions: [((T1) -> Bool, (T1) -> T2)]) -> (T1) -> T2? {
     return { value in
         for (predicate, action) in conditions {
