@@ -20,18 +20,22 @@
 
 import Foundation
 
+@inlinable
 public func less<T: Comparable>(_ value: T) -> (T) -> Bool {
     return { $0 < value }
 }
 
+@inlinable
 public func lessEq<T: Comparable>(_ value: T) -> (T) -> Bool {
     return { $0 <= value }
 }
 
+@inlinable
 public func greater<T: Comparable>(_ value: T) -> (T) -> Bool {
     return { $0 > value }
 }
 
+@inlinable
 public func greaterEq<T: Comparable>(_ value: T) -> (T) -> Bool {
     return { $0 >= value }
 }
