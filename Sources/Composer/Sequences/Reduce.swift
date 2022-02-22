@@ -20,16 +20,22 @@
 
 import Foundation
 
+public func reduce<S, R, T>(into initialValue: R, _ f: @escaping (inout R, T) -> Void)
+-> (S) -> R where S: Sequence, S.Element == T {
+    return { $0.reduce(into: initialValue, f) }
+}
+
 public func reduce<S, R, T>(into initialValue: R, _ f: @escaping (inout R, T) throws -> Void)
 -> (S) throws -> R where S: Sequence, S.Element == T {
-    return { collection in
-        try collection.reduce(into: initialValue, f)
-    }
+    return { try $0.reduce(into: initialValue, f) }
+}
+
+public func reduce<S, R, T>(_ initialValue: R, _ f: @escaping (R, T) -> R)
+-> (S) -> R where S: Sequence, S.Element == T {
+    return { $0.reduce(initialValue, f) }
 }
 
 public func reduce<S, R, T>(_ initialValue: R, _ f: @escaping (R, T) throws -> R)
 -> (S) throws -> R where S: Sequence, S.Element == T {
-    return { collection in
-        try collection.reduce(initialValue, f)
-    }
+    return { try $0.reduce(initialValue, f) }
 }
