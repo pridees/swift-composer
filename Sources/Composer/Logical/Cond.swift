@@ -18,6 +18,13 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
+public func cond<T1, T2>(`if` predicate: @escaping (T1) -> Bool, then f: @escaping (T1) -> T2) -> (T1) -> T2? {
+    return { value in
+        guard predicate(value) else { return nil }
+        return f(value)
+    }
+}
+
 public func cond<T1, T2>(_ conditions: [((T1) -> Bool, T2)]) -> (T1) -> T2? {
     return { value in
         for (predicate, result) in conditions {
