@@ -20,7 +20,7 @@
 
 import Foundation
 
-public func `if`<T1, T2>(_ predicate: @escaping (T1) -> Bool, else transform: @escaping (T1) -> T2) -> (T1) -> T2? {
+public func `if`<T1, T2>(_ predicate: @escaping (T1) -> Bool, then transform: @escaping (T1) -> T2) -> (T1) -> T2? {
     return { value in
         guard predicate(value) else { return nil }
         return transform(value)
