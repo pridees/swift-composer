@@ -18,43 +18,22 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
-public func cond<T1, T2>(_ conditions: [((T1) -> Bool, T2)]) -> (T1) -> T2? {
+import Foundation
+
+public func `if`<T1, T2>(_ predicate: @escaping (T1) -> Bool, else transform: @escaping (T1) -> T2) -> (T1) -> T2? {
     return { value in
-        for (predicate, result) in conditions {
-            guard predicate(value) else { continue }
-            return result
-        }
-        return nil
+        guard predicate(value) else { return nil }
+        return transform(value)
     }
 }
 
-public func cond<T1, T2>(_ conditions: [((T1) -> Bool, T2)], `default`: T2) -> (T1) -> T2 {
+public func `if`<T1, T2>(
+    _ predicate: @escaping (T1) -> Bool,
+    then t1: @escaping (T1) -> T2,
+    else t2: @escaping (T1) -> T2
+) -> (T1) -> T2 {
     return { value in
-        for (predicate, result) in conditions {
-            guard predicate(value) else { continue }
-            return result
-        }
-        return `default`
-    }
-}
-
-
-public func cond<T1, T2>(_ conditions: [((T1) -> Bool, (T1) -> T2)]) -> (T1) -> T2? {
-    return { value in
-        for (predicate, action) in conditions {
-            guard predicate(value) else { continue }
-            return action(value)
-        }
-        return nil
-    }
-}
-
-public func cond<T1, T2>(_ conditions: [((T1) -> Bool, (T1) -> T2)], `default`: @escaping (T1) -> T2) -> (T1) -> T2 {
-    return { value in
-        for (predicate, action) in conditions {
-            guard predicate(value) else { continue }
-            return action(value)
-        }
-        return `default`(value)
+        guard predicate(value) else { return t2(value) }
+        return t1(value)
     }
 }
