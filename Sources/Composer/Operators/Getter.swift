@@ -18,33 +18,11 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
-public func map<A, B>(_ f: @escaping (A) -> B) -> (A) -> B {
-    return { f($0) }
+public func get<Root, Value>(_ keypath: KeyPath<Root, Value>)
+-> (Root) -> Value {
+    return { $0[keyPath: keypath] }
 }
 
-public func map<A, B>(_ f: @escaping (A) -> B) -> (A?) -> B? {
-    return {
-        switch $0 {
-        case let .some(value):
-            return .some(f(value))
-        case .none:
-            return .none
-        }
-    }
+public func get<Key, Value>(_ key: Key) -> ([Key:Value]) -> Value? {
+    return { $0[key] }
 }
-
-public func tryMap<A, B>(_ f: @escaping (A) throws -> B) -> (A) throws -> B {
-    return { try f($0) }
-}
-
-public func tryMap<A, B>(_ f: @escaping (A) throws -> B) -> (A?) throws -> B? {
-    return {
-        switch $0 {
-        case let .some(value):
-            return .some(try f(value))
-        case .none:
-            return .none
-        }
-    }
-}
-

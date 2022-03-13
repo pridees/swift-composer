@@ -18,52 +18,12 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
-precedencegroup ForwardApplication  {
-    associativity: left
-    higherThan: AssignmentPrecedence
-}
+import Foundation
 
-infix operator |> : ForwardApplication
+// MARK: - Semigroup
 
-infix operator <| : ForwardApplication
-
-public func |> <T1, T2>(_ t1: T1, _ f: @escaping (T1) -> T2) -> T2 {
-    return f(t1)
-}
-
-public func |> <T1, T2>(_ t1: T1, _ f: @escaping (T1) throws -> T2) rethrows -> T2 {
-    return try f(t1)
-}
-
-public func |> <T1>(_ t1: inout T1, _ f: @escaping (inout T1) throws -> Void) rethrows -> T1 {
-    try f(&t1)
-    return t1
-}
-
-
-@discardableResult
-public func |> <T1: AnyObject>(_ t1: T1, _ f: @escaping (T1) throws -> Void) rethrows -> T1 {
-    try f(t1)
-    return t1
-}
-
-/// MARK: Inverted
-
-public func <| <T1, T2>(_ f: @escaping (T1) -> T2, _ t1: T1) -> T2 {
-    return f(t1)
-}
-
-public func <| <T1, T2>( _ f: @escaping (T1) throws -> T2, _ t1: T1) throws -> T2 {
-    return try f(t1)
-}
-
-public func <| <T1>(_ f: @escaping (inout T1) throws -> Void, _ t1: inout T1) rethrows -> T1 {
-    try f(&t1)
-    return t1
-}
-
-@discardableResult
-public func <| <T1: AnyObject>(_ f: @escaping (T1) throws -> Void, _ t1: T1) rethrows -> T1 {
-    try f(t1)
-    return t1
+extension Range: Semigroup {
+    public static func <> (lhs: Self, rhs: Self) -> Self {
+        .init(uncheckedBounds: (Swift.min(lhs.lowerBound, rhs.lowerBound), Swift.max(lhs.upperBound, rhs.lowerBound)))
+    }
 }

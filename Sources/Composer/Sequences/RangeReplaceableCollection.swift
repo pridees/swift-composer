@@ -27,8 +27,8 @@ where S.Element == T {
 }
 
 @discardableResult
-public func append<S: RangeReplaceableCollection>(_ sequence: S) -> (inout S) -> Void {
-    return { $0.append(contentsOf: sequence) }
+public func mutConcat<S: RangeReplaceableCollection>(_ sequence: S) -> (inout S) -> Void {
+    return { $0 += sequence }
 }
 
 public func filter<S: RangeReplaceableCollection>(_ predicate: @escaping (S.Element) throws -> Bool) -> (S) throws -> S {
@@ -42,19 +42,10 @@ public func insert<S: RangeReplaceableCollection>(_ newElement: S.Element, at in
     return { $0.insert(newElement, at: index) }
 }
 
-public func removeLast<S: RangeReplaceableCollection & BidirectionalCollection>(_ sequence: inout S) -> Void {
-    _ = sequence.popLast()
-}
-
 @discardableResult
 public func popLast<S: RangeReplaceableCollection & BidirectionalCollection>(_ sequence: inout S) -> S.Element? {
    sequence.popLast()
 }
-
-//@discardableResult
-//public func popLast<S: RangeReplaceableCollection & BidirectionalCollection>(_ sequence: inout S) -> S.Element? where S.SubSequence == S {
-//    sequence.popLast()
-//}
 
 @discardableResult
 public func popFirst<S: RangeReplaceableCollection>(_ sequence: inout S) -> S.Element? where S.SubSequence == S {
@@ -62,6 +53,66 @@ public func popFirst<S: RangeReplaceableCollection>(_ sequence: inout S) -> S.El
 }
 
 @discardableResult
-public func remove<S: RangeReplaceableCollection>(at index: S.Index) -> (inout S) -> Void {
-    return { _ = $0.remove(at: index) }
+public func remove<S: RangeReplaceableCollection>(at index: S.Index) -> (inout S) -> S.Element {
+    return { $0.remove(at: index) }
 }
+
+public func remove<S: RangeReplaceableCollection & MutableCollection>(atOffsets: IndexSet) -> (inout S) -> Void {
+    return { $0.remove(atOffsets: atOffsets) }
+}
+
+public func removeAll<S: RangeReplaceableCollection>(keepingCapacity: Bool) -> (inout S) -> Void {
+    return { $0.removeAll(keepingCapacity: keepingCapacity) }
+}
+
+public func removeAll<S: RangeReplaceableCollection>(where predicate: @escaping (S.Element) -> Bool)
+-> (inout S) -> Void {
+    return { $0.removeAll(where: predicate) }
+}
+
+@discardableResult
+func removeFirst<S: RangeReplaceableCollection>() -> (inout S) -> S.Element {
+    return { $0.removeFirst() }
+}
+
+func removeFirst<S: RangeReplaceableCollection>(count: Int) -> (inout S) -> Void {
+    return { $0.removeFirst(count) }
+}
+
+public func removeLast<S: RangeReplaceableCollection & BidirectionalCollection>(_ sequence: inout S) -> Void {
+    _ = sequence.popLast()
+}
+
+@discardableResult
+func removeLast<S>() -> (inout S) -> S.Element
+where S: RangeReplaceableCollection & BidirectionalCollection {
+    return { $0.removeLast() }
+}
+
+@discardableResult
+public func removeLast<S>()
+-> (inout S) -> S.Element where S: RangeReplaceableCollection & BidirectionalCollection, S.SubSequence == S {
+    return { $0.removeLast() }
+}
+
+public func removeLast<S>(count: Int) -> (inout S) -> Void
+where S: RangeReplaceableCollection & BidirectionalCollection {
+    return { $0.removeLast(count) }
+}
+
+@discardableResult
+public func removeLast<S>(count: Int) -> (inout S) -> Void
+where S: RangeReplaceableCollection & BidirectionalCollection, S.SubSequence == S {
+    return { $0.removeLast(count) }
+}
+
+public func removeSubrange<S>(_ bounds: Range<S.Index>) -> (inout S) -> Void
+where S: RangeReplaceableCollection {
+    return { $0.removeSubrange(bounds) }
+}
+
+public func replaceSubrange<S, C>(_ subrange: Range<S.Index>, with newElements: C) -> (inout S) -> Void
+where S: RangeReplaceableCollection, C: Collection, S.Element == C.Element {
+    return { $0.replaceSubrange(subrange, with: newElements) }
+}
+

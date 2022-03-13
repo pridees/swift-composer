@@ -18,25 +18,61 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
-precedencegroup ComposeInfix {
+
+precedencegroup SingleTypePrecedence {
     associativity: left
-    higherThan: ForwardApplication
 }
 
-infix operator <<< : ComposeInfix
+infix operator <*> : SingleTypePrecedence
 
-public func <<< <A, B, C>(_ b2c: @escaping (B) -> C, _ a2b: @escaping (A) -> B) -> (A) -> C {
-    return { a in b2c(a2b(a)) }
+// MARK: - Immutable Apply Operator
+
+public func <*> <T>(_ f: @escaping (T) -> T, _ g: @escaping (T) -> T) -> (T) -> T {
+    return f >>> g
 }
 
-public func <<< <A, B, C>(_ b2c: @escaping (B) throws -> C, _ a2b: @escaping (A) throws -> B) -> (A) throws -> C {
-    return { a in try b2c(try a2b(a)) }
+public func <*> <T>(_ f: @escaping (T) throws -> T, _ g: @escaping (T) throws -> T) -> (T) throws -> T {
+    return f >=> g
 }
 
-public func compose<A, B, C>(_ b2c: @escaping (B) -> C, _ a2b: @escaping (A) -> B) -> (A) -> C {
-    return b2c <<< a2b
+// MARK: - InOut Apply Operator
+
+public func <*> <T>(_ f: @escaping (inout T) -> Void, _ g: @escaping (inout T) -> Void)
+-> (inout T) -> Void {
+    return { a in
+        f(&a)
+        g(&a)
+    }
 }
 
-public func compose<A, B, C>(_ b2c: @escaping (B) throws -> C, _ a2b: @escaping (A) throws -> B) -> (A) throws -> C {
-    return b2c <<< a2b
+public func <*> <T>(
+    f: @escaping (inout T) throws -> Void,
+    g: @escaping (inout T) throws -> Void
+) -> (inout T) throws -> Void {
+    return { a in
+        try f(&a)
+        try g(&a)
+    }
+}
+
+// MARK: - AnyObject Apply Operator
+
+public func <*> <T: AnyObject>(
+    _ f: @escaping (T) -> Void,
+    _ g: @escaping (T) -> Void
+) -> (T) -> Void {
+    return { a in
+        f(a)
+        g(a)
+    }
+}
+
+public func <*> <T: AnyObject>(
+    _ f: @escaping (T) throws -> Void,
+    _ g: @escaping (T) throws -> Void
+) -> (T) throws -> Void {
+    return { a in
+        try f(a)
+        try g(a)
+    }
 }

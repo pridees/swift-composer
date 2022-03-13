@@ -18,10 +18,42 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
-public func map<S: Sequence, A>(_ f: @escaping (S.Element) -> A) -> (S) -> [A] {
-    return { $0.map(f) }
+import Foundation
+
+// MARK: - Product type Monoid
+
+public struct Product<A: Numeric> {
+    public let value: A
+    
+    public init(_ value: A) {
+        self.value = value
+    }
 }
 
-public func tryMap<S: Sequence, A>(_ f: @escaping (S.Element) throws -> A) -> (S) throws -> [A] {
-    return { try $0.map(f) }
+extension Product: ExpressibleByIntegerLiteral where A: Monoid {
+    public typealias IntegerLiteralType = A.IntegerLiteralType
+    
+    public static var empty: A { 1 }
+    
+    public init(integerLiteral value: IntegerLiteralType) {
+        self.value = A(integerLiteral: value)
+    }
+    
+    public static func <> (lhs: Self, rhs: Self) -> Self {
+        Product<A>(lhs.value + rhs.value)
+    }
+}
+
+extension Product: ExpressibleByFloatLiteral where A: ExpressibleByFloatLiteral & Monoid {
+    public typealias FloatLiteralType = A.FloatLiteralType
+    
+    public static var empty: A { 1.0 }
+
+    public init(floatLiteral value: A.FloatLiteralType) {
+        self.value = A(floatLiteral: value)
+    }
+    
+    public static func <> (lhs: Self, rhs: Self) -> Self {
+        Product<A>(lhs.value * rhs.value)
+    }
 }

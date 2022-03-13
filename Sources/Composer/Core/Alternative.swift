@@ -18,20 +18,12 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
-import Foundation
-
-public func first<T>(_ collection: [T]) -> T? {
-    return collection.first
+precedencegroup AlternativePrecedence  {
+    associativity: left
 }
 
-public func last<T>(_ collection: [T]) -> T? {
-    return collection.last
-}
+infix operator <|> : AlternativePrecedence
 
-public func firstWhere<T: Equatable>(_ value: T) -> ([T]) -> T? {
-    return { $0.first(where: equals(value)) }
-}
-
-public func lastWhere<T: Equatable>(_ value: T) -> ([T]) -> T? {
-    return { $0.last(where: equals(value)) }
+public func <|> <A> (_ a: A?, _ alt: @autoclosure @escaping () -> A) -> A {
+    return a ?? alt()
 }

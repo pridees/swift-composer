@@ -20,12 +20,11 @@
 
 import Foundation
 
-@inlinable
-public func equals<A: Equatable>(_ a: A) -> (A) -> Bool {
-    return { a == $0 }
-}
+#if canImport(Combine)
+import Combine
 
-@inlinable
-public func equals<Root, Value: Equatable>(_ keyPath: KeyPath<Root, Value>, _ value: Value) -> (Root) -> Bool {
-    return get(keyPath) >>> equals(value)
+public func <> <P, T, E> (lhs: P, rhs: P) -> Publishers.MergeMany<P>
+where P: Publisher, P.Output == T, P.Failure == E {
+    lhs.merge(with: rhs)
 }
+#endif

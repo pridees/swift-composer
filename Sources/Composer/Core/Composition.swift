@@ -18,7 +18,34 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
-@inlinable
-public func listOf<A>(_ a: A...) -> [A] {
-    return a
+precedencegroup CompositionPrecedence {
+    associativity: left
+    higherThan: ApplicativePrecedence, SingleTypePrecedence
+}
+
+infix operator >>> : CompositionPrecedence
+infix operator <<< : CompositionPrecedence
+
+public func >>> <A, B, C>(_ a2b: @escaping (A) -> B, _ b2c: @escaping (B) -> C) -> (A) -> C {
+    return { a in b2c(a2b(a)) }
+}
+
+public func <<< <A, B, C>(_ b2c: @escaping (B) -> C, _ a2b: @escaping (A) -> B) -> (A) -> C {
+    return { a in b2c(a2b(a)) }
+}
+
+precedencegroup EffectfulCompositionPrecedence  {
+    associativity: left
+    higherThan: CompositionPrecedence
+}
+
+infix operator >=> : EffectfulCompositionPrecedence
+infix operator <=< : EffectfulCompositionPrecedence
+
+public func >=> <A, B, C>(_ a2b: @escaping (A) throws -> B, _ b2c: @escaping (B) throws -> C) -> (A) throws -> C {
+    return { a in try b2c(try a2b(a)) }
+}
+
+public func <=< <A, B, C>(_ b2c: @escaping (B) throws -> C, _ a2b: @escaping (A) throws -> B) -> (A) throws -> C {
+    return { a in try b2c(try a2b(a)) }
 }

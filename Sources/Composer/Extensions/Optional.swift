@@ -18,12 +18,28 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
-
 import Foundation
 
-extension Optional {
-    public func unwrap() -> Wrapped? {
-        guard let self = self else { return nil }
-        return self
+// MARK: - Semigroup
+
+extension Optional: Semigroup where Wrapped: Semigroup {
+    public static func <> (lhs: Self, rhs: Self) -> Self {
+        switch (lhs, rhs) {
+        case let (.some(lval), .some(rval)): return .some(lval <> rval)
+        case let (.some(lval), .none): return .some(lval)
+        case let (.none, .some(rval)): return .some(rval)
+        case (.none, .none): return .none
+        }
     }
 }
+
+#if canImport(SwiftUI)
+import SwiftUI
+
+public func ??<T>(_ binding: Binding<T?>, _ value: T) -> Binding<T> {
+    Binding<T>(
+        get: { binding.wrappedValue ?? value },
+        set: { binding.wrappedValue = $0 }
+    )
+}
+#endif

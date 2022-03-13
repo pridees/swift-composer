@@ -18,10 +18,18 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
-public func applyTo<A, B>(_ a: A) -> ((A) -> B) -> B {
-    return { $0(a) }
+import Foundation
+
+// MARK: - Semigroup
+
+extension Array: Semigroup {
+    public static func <> (lhs: Array, rhs: Array) -> Array {
+        lhs + rhs
+    }
 }
 
-public func applyTo<A, B>(_ a: A) -> ((A) throws -> B) throws -> B {
-    return { try $0(a) }
+// MARK: - Array Monoid
+
+extension Array: Monoid {
+    public static var empty: Array { [] }
 }

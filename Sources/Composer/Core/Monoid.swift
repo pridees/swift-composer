@@ -20,12 +20,18 @@
 
 import Foundation
 
-public func contains<S, T>(_ value: T) -> (S) -> Bool
-where S: Sequence, T: Equatable, S.Element == T {
-    return { $0.contains(where: equals(value)) }
+// MARK: - Monoid Definition
+
+public protocol Monoid: Semigroup {
+    static var empty: Self { get }
 }
 
-public func containsBy<S, R, T>(_ keyPath: KeyPath<R, T>, _ value: T) -> (S) -> Bool
-where S: Sequence, T: Equatable, S.Element == R {
-    return { $0.contains(where: get(keyPath) >>> equals(value)) }
+extension Monoid where Self: Sequence {
+    public func reduce(_ f: @escaping (Self, Self.Element) throws -> Self) rethrows -> Self {
+        try self.reduce(.empty, f)
+    }
+    
+    public func reduce<R: Monoid>(_ f: @escaping (R, Self.Element) throws -> R) rethrows -> R {
+        try self.reduce(.empty, f)
+    }
 }

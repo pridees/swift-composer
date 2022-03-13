@@ -18,6 +18,7 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
+@inlinable
 public func and(_ lhs: Bool, _ rhs: Bool) -> Bool {
     return lhs && rhs
 }

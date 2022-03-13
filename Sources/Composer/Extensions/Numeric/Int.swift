@@ -20,12 +20,16 @@
 
 import Foundation
 
-@inlinable
-public func equals<A: Equatable>(_ a: A) -> (A) -> Bool {
-    return { a == $0 }
+// MARK: - Int Semigroup
+
+extension Int: Semigroup {
+    public static func <> (lhs: Self, rhs: Self) -> Self {
+        lhs + rhs
+    }
 }
 
-@inlinable
-public func equals<Root, Value: Equatable>(_ keyPath: KeyPath<Root, Value>, _ value: Value) -> (Root) -> Bool {
-    return get(keyPath) >>> equals(value)
+// MARK: - Int Monoid
+
+extension Int: Monoid {
+    public static var empty: Self { 0 }
 }

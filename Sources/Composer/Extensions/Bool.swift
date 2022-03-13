@@ -18,7 +18,18 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
-@inlinable
-public func defaultTo<A>(_ value: A) -> (A?) -> A {
-    return { $0.unwrap() ?? value }
+import Foundation
+
+// MARK: - Semigroup
+
+extension Bool: Semigroup {
+    public static func <> (lhs: Self, rhs: Self) -> Self {
+        lhs && rhs
+    }
+}
+
+// MARK: - Monoid
+
+extension Bool: Monoid {
+    public static var empty: Self { true }
 }

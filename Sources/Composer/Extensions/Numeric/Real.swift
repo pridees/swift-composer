@@ -18,14 +18,29 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
-@inlinable
-public func replaceNil<T>(with value: T) -> (T?) -> T {
-    return {
-        switch $0 {
-        case let .some(origin):
-            return origin
-        case .none:
-            return value
-        }
+import Foundation
+
+// MARK: - Semigroup
+
+extension Float: Semigroup {
+    public static func <> (lhs: Float, rhs: Float) -> Float {
+        lhs + rhs
     }
+}
+
+extension Double: Semigroup {
+    public static func <> (lhs: Self, rhs: Self) -> Self {
+        lhs + rhs
+    }
+}
+
+// MARK: - Real numbers Monoid
+
+extension Float: Monoid {
+    public static var empty: Float { 0.0 }
+}
+
+
+extension Double: Monoid {
+    public static var empty: Self { 0.0 }
 }

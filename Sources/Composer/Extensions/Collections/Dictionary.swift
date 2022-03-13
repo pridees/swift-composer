@@ -20,24 +20,10 @@
 
 import Foundation
 
-public func mutEach<S: MutableCollection, A>(_ f: @escaping (A) -> A)
--> (inout S) -> Void where S.Element == A, S.Index == Int {
-    return { coll in
-        for (index, element) in coll.enumerated() {
-            coll[index] = f(element)
-        }
-    }
-}
+// MARK: - Semigroup
 
-public func mutEach<S: Sequence, A: AnyObject>(_ f: @escaping (A) -> Void)
--> (S) -> Void where S.Element == A {
-    return { $0.forEach(f) }
-}
-
-public func mutEach<S: Sequence, A: AnyObject>(_ f: @escaping (A) -> Void)
--> (S) -> S where S.Element == A {
-    return { coll in
-        coll.forEach(f)
-        return coll
+extension Dictionary: Semigroup {
+    public static func <> (lhs: Self, rhs: Self) -> Self {
+        lhs.merging(rhs) { _, v in v }
     }
 }

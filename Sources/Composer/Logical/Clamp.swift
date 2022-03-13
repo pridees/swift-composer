@@ -20,6 +20,14 @@
 
 import Foundation
 
-public func flatMap<S: Sequence, T>(_ transform: @escaping (S.Element) throws -> [T]) -> (S) throws -> [T] {
-    return { try $0.flatMap(transform) }
+/// Restricts a value to be within a range.
+@inlinable
+public func clamp<A: Comparable>(in range: CountableRange<A>) -> (A) -> A {
+    return { min(range.upperBound.advanced(by: -1), max($0, range.lowerBound)) }
+}
+
+/// Restricts a value to be within a closed range.
+@inlinable
+public func clamp<A: Comparable>(in range: CountableClosedRange<A>) -> (A) -> A {
+    return { min(range.upperBound, max($0, range.lowerBound)) }
 }

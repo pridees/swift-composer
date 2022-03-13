@@ -20,12 +20,32 @@
 
 import Foundation
 
-@inlinable
-public func equals<A: Equatable>(_ a: A) -> (A) -> Bool {
-    return { a == $0 }
+public struct Sum<A: Numeric> {
+    let value: A
+    
+    public init(_ value: A) {
+        self.value = value
+    }
 }
 
-@inlinable
-public func equals<Root, Value: Equatable>(_ keyPath: KeyPath<Root, Value>, _ value: Value) -> (Root) -> Bool {
-    return get(keyPath) >>> equals(value)
+// MARK: - Sum type Monoid
+
+extension Sum: ExpressibleByIntegerLiteral where A: Monoid {
+    public typealias IntegerLiteralType = A.IntegerLiteralType
+    
+    public static var empty: A { 0 }
+    
+    public init(integerLiteral value: IntegerLiteralType) {
+        self.value = A(integerLiteral: value)
+    }
+}
+
+extension Sum: ExpressibleByFloatLiteral where A: ExpressibleByFloatLiteral & Monoid {
+    public typealias FloatLiteralType = A.FloatLiteralType
+    
+    public static var empty: A { 0.0 }
+
+    public init(floatLiteral value: A.FloatLiteralType) {
+        self.value = A(floatLiteral: value)
+    }
 }

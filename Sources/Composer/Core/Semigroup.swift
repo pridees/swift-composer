@@ -18,12 +18,19 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
+import Foundation
 
-import SwiftUI
+precedencegroup MonoidalAppendPrecedence {
+    associativity: left
+    higherThan: ApplicativePrecedence
+}
 
-public func ??<T>(_ binding: Binding<T?>, _ value: T) -> Binding<T> {
-    Binding<T>(
-        get: { binding.wrappedValue ?? value },
-        set: { binding.wrappedValue = $0 }
-    )
+infix operator <> : MonoidalAppendPrecedence
+
+public protocol Semigroup {
+    static func <> (lhs: Self, rhs: Self) -> Self
+}
+
+public func <> <S: Semigroup>(lhs: S, rhs: S) -> S {
+    lhs <> rhs
 }

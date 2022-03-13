@@ -20,29 +20,16 @@
 
 import Foundation
 
-public func sort<T: Comparable>(_ comparator: @escaping (T, T) -> Bool) -> (inout [T]) -> Void {
-    return { collection in collection.sort(by: comparator)}
+// MARK: - Semigroup
+
+extension String: Semigroup {
+    public static func <> (lhs: Self, rhs: Self) -> Self {
+        lhs + rhs
+    }
 }
 
-public func sort<T: Comparable>(_ sequence: inout [T]) -> Void {
-    return sort(<)(&sequence)
-}
+// MARK: - String Monoid
 
-public func sortBy<Root, Value: Comparable>(_ keyPath: KeyPath<Root, Value>, _ comparator: @escaping (Value, Value) -> Bool)
--> (inout [Root]) -> Void {
-    return { $0.sort(by: combineBy(keyPath, comparator)) }
+extension String: Monoid {
+    public static var empty: Self { "" }
 }
-
-public func sorted<T: Comparable>(_ comparator: @escaping (T, T) -> Bool) -> ([T]) -> [T] {
-    return { collection in collection.sorted(by: comparator)}
-}
-
-public func sorted<T: Comparable>(_ sequence: [T]) -> [T] {
-    return sorted(<)(sequence)
-}
-
-public func sortedBy<Root, Value: Comparable>(_ keyPath: KeyPath<Root, Value>, _ comparator: @escaping (Value, Value) -> Bool)
--> ([Root]) -> [Root] {
-    return { $0.sorted(by: combineBy(keyPath, comparator)) }
-}
-

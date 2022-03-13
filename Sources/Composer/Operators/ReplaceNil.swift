@@ -18,14 +18,7 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
-import Foundation
-
-/// Calls non error-throwing closure on passed sequence's elements
-public func compactMap<S: Sequence, A>(_ f: @escaping (S.Element) -> A?) -> (S) -> [A] {
-    return { $0.compactMap(f) }
-}
-
-/// Calls error-throwing closure on passed sequence's elements
-public func tryCompactMap<S: Sequence, A>(_ f: @escaping (S.Element) throws -> A?) -> (S) throws -> [A] {
-    return { try $0.compactMap(f) }
+@inlinable
+public func replaceNil<T>(_ value: T) -> (T?) -> T {
+    return { $0 ?? value }
 }

@@ -18,7 +18,25 @@
 //    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //    SOFTWARE.
 
-public func get<Root, Value>(_ keypath: KeyPath<Root, Value>)
--> (Root) -> Value {
-    return { $0[keyPath: keypath] }
+import Foundation
+
+precedencegroup OptionalChainingPrecedence {
+    associativity: left
+    higherThan: ApplicativePrecedence
+}
+
+infix operator <?> : OptionalChainingPrecedence
+
+public func <?> <A, B, C> (_ a2b: @escaping (A) -> B, _ b2c: @escaping (B) -> C) -> (A?) -> C? {
+    return { $0
+        .map(a2b)
+        .map(b2c)
+    }
+}
+
+public func <?> <A, B, C> (_ a2b: @escaping (A) -> B?, _ b2c: @escaping (B) -> C?) -> (A?) -> C? {
+    return { $0
+        .flatMap(a2b)
+        .flatMap(b2c)
+    }
 }

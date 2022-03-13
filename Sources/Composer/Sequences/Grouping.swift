@@ -20,15 +20,7 @@
 
 import Foundation
 
-public func isEmpty(_ s: String) -> Bool {
-    return s.isEmpty
+public func groupBy<S, K, V>(key extract: @escaping (S.Element) throws -> K)
+-> (S) throws -> Dictionary<K, [V]> where S: Sequence, V == S.Element {
+    return { try Dictionary(grouping: $0, by: extract) }
 }
-
-public func isEmpty<S: Collection>(_ s: S) -> Bool {
-    return s.isEmpty
-}
-
-public func isEmpty<S: RandomAccessCollection>(_ s: S) -> Bool {
-    return s.isEmpty
-}
-
