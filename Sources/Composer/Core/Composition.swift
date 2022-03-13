@@ -20,7 +20,7 @@
 
 precedencegroup CompositionPrecedence {
     associativity: left
-    higherThan: ApplicativePrecedence, SingleTypePrecedence
+    higherThan: ApplicativePrecedence
 }
 
 infix operator >>> : CompositionPrecedence

@@ -21,6 +21,7 @@
 
 precedencegroup SingleTypePrecedence {
     associativity: left
+    higherThan: ApplicativePrecedence
 }
 
 infix operator <*> : SingleTypePrecedence

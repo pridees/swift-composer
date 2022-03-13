@@ -20,6 +20,7 @@
 
 precedencegroup ApplicativePrecedence  {
     associativity: left
+    higherThan: AssignmentPrecedence
 }
 
 infix operator |> : ApplicativePrecedence
