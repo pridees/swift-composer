@@ -19,10 +19,13 @@
 //    SOFTWARE.
 
 import Foundation
+import Composer
 
 #if canImport(Combine)
 import Combine
 
+
+// Monoidal append
 public func <> <P, T, E> (lhs: P, rhs: P) -> Publishers.MergeMany<P>
 where P: Publisher, P.Output == T, P.Failure == E {
     lhs.merge(with: rhs)

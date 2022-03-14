@@ -39,7 +39,7 @@ public func fireOnce<P, T>(
 
 public func fireAndForget<P, E>(
     _ completion: @escaping (Subscribers.Completion<P.Failure>) -> Void
-) -> (P) -> Void where P: Publisher, P.Output == Never, P.Failure == E {
+) -> (P) -> Void where P: Publisher, P.Output == Void, P.Failure == E {
     return { publisher in
         var subsciption: AnyCancellable?
         subsciption = publisher
