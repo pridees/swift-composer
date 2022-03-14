@@ -20,35 +20,51 @@
 
 import Foundation
 
-#if canImport(Combine)
-import Combine
+/// Protocol with single default method
+/// it makes new copy and change object
+///
+/// Call the function `mutate(_ closure: (inout Self) -> Void) -> Self`
+///
+/// Usage
+/// ```swift
+/// struct User: Mutable {
+///     let name: String
+///     let age: Int
+/// }
+///
+/// let user = User(name: "John", age: 10)
+///
+/// let updatedUser = user.mutate { user in
+///     user.name = "Mitch"
+/// }
+///
+/// updatedUser // { name: "Mitch", age: 10 }
+/// ```
+public protocol Mutable {}
 
-public func fireOnce<P, T>(
-    _ completion: @escaping (T) -> Void
-) -> (P) -> Void where P: Publisher, P.Output == T, P.Failure == Never {
-    return { publisher in
-        var subsciption: AnyCancellable?
-        subsciption = publisher
-            .handleEvents(receiveCompletion: { _ in
-                subsciption?.cancel()
-                subsciption = nil
-            })
-            .sink(receiveValue: completion)
+extension Mutable {
+    /// Gets closure which passing inout Struct ref
+    ///
+    /// - Parameter closure: (inout Self) -> Void
+    ///
+    /// - Returns: Self
+    ///
+    public func mutate(_ f: @escaping (inout Self) -> Void) -> Self {
+        self |> mut(f)
     }
 }
 
-public func fireAndForget<P, E>(
-    _ completion: @escaping (Subscribers.Completion<P.Failure>) -> Void
-) -> (P) -> Void where P: Publisher, P.Output == Never, P.Failure == E {
-    return { publisher in
-        var subsciption: AnyCancellable?
-        subsciption = publisher
-            .handleEvents(receiveCompletion: { _ in
-                subsciption?.cancel()
-                subsciption = nil
-            })
-            .sink(receiveCompletion: completion, receiveValue: { _ in })
+public func mut<A>(_ f: @escaping (inout A) -> Void) -> (A) -> A {
+    return {
+        var copy = $0
+        f(&copy)
+        return copy
     }
 }
 
-#endif
+public func mut<A: AnyObject>(_ f: @escaping (inout A) -> Void) -> (inout A) -> A {
+    return {
+        f(&$0)
+        return $0
+    }
+}

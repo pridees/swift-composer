@@ -13,9 +13,15 @@ let optionalValue: Int? = 2
 //
 //optionalValue |> flatMap(incr >>> sqrt)
 
-let p1 = Just(true)
-let p2 = Just(false)
-let p3 = Just(true)
+class User {
+    var name: String
+    
+    init(_ name: String) {
+        self.name = name
+    }
+}
 
-(p1 <> p2) |>
-    { $0.sink(receiveValue: { print($0) }) }
+var arr2: [User] = [User("Alex"), User("Boris"), User("Michael")]
+     |> mutEach { $0.name += " Ovcharenko" }
+     <*> Array<User>.init
+                                    

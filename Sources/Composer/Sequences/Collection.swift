@@ -23,9 +23,10 @@ import Foundation
 // MARK: - Construct
 
 extension Array {
-    public init(withCapacity capacity: Int) {
-        self.init()
-        self.reserveCapacity(capacity)
+    public static func sized(capacity: Int) -> Array {
+        var coll = Self()
+        coll.reserveCapacity(capacity)
+        return coll
     }
 }
 
