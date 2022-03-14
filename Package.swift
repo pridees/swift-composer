@@ -21,6 +21,6 @@ let package = Package(
         .target(name: "Composer", dependencies: []),
         .testTarget(name: "ComposerTests", dependencies: ["Composer"]),
         
-        .target(name: "ComposerCombine", dependencies: []),
+            .target(name: "ComposerCombine", dependencies: [.init(stringLiteral: "Composer")]),
     ]
 )
