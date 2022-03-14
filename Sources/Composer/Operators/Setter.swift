@@ -32,19 +32,17 @@ public func set<Root, Value>(
 public func set<Root, Value>(
     _ keypath: WritableKeyPath<Root, Value>,
     _ value: Value
-) -> (inout Root) -> Root {
+) -> (inout Root) -> Void {
     return { root in
         root[keyPath: keypath] = value
-        return root
     }
 }
 
 public func set<Root, Value>(
     _ keypath: ReferenceWritableKeyPath<Root, Value>,
     _ value: Value
-) -> (Root) -> Root where Root: AnyObject {
+) -> (Root) -> Void where Root: AnyObject {
     return { root in
         root[keyPath: keypath] = value
-        return root
     }
 }

@@ -252,12 +252,12 @@ public func isEmpty<C: Collection>(_ coll: C) -> Bool {
 
 @inlinable
 public func join<S>(_ seq: S) -> S.Element
-where S: Sequence, S.Element == String {
+where S: Sequence, S.Element: Monoid {
     seq |> reduce(.empty, <>)
 }
 
 public func join<S>(with separator: S.Element) -> (S) -> S.Element
-where S: Sequence, S.Element == String {
+where S: Sequence, S.Element: Monoid {
     reduce(.empty, { $0 <> $1 <> separator })
 }
 

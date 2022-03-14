@@ -34,3 +34,7 @@ public protocol Semigroup {
 public func <> <S: Semigroup>(lhs: S, rhs: S) -> S {
     lhs <> rhs
 }
+
+public func <> <S: RangeReplaceableCollection>(_ seq: inout S, element: S.Element) -> Void {
+    seq.append(element)
+}
