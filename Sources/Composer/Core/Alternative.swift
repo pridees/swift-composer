@@ -24,6 +24,7 @@ precedencegroup AlternativePrecedence  {
 
 infix operator <|> : AlternativePrecedence
 
+
 public func <|> <A> (_ a: A?, _ alt: @autoclosure @escaping () -> A) -> A {
     return a ?? alt()
 }

@@ -24,30 +24,96 @@ import Foundation
 import Combine
 
 public func fireOnce<P, T>(
-    _ completion: @escaping (T) -> Void
+    _ receiveValue: @escaping (T) -> Void
 ) -> (P) -> Void where P: Publisher, P.Output == T, P.Failure == Never {
     return { publisher in
         var subsciption: AnyCancellable?
         subsciption = publisher
-            .handleEvents(receiveCompletion: { _ in
+            .sink(receiveValue: {
+                receiveValue($0)
                 subsciption?.cancel()
                 subsciption = nil
             })
-            .sink(receiveValue: completion)
     }
+}
+
+public func fireOnce<P, T, E>(
+    _ recieveValue: @escaping (T) -> Void,
+    _ recieveError: ((P.Failure) -> Void)? = nil
+) -> (P) -> Void where P: Publisher, P.Output == T, P.Failure == E {
+    return { publisher in
+        var subsciption: AnyCancellable?
+        subsciption = publisher
+            .sink(
+                receiveCompletion: { competion in
+                    switch(competion) {
+                    case let .failure(error):
+                        recieveError?(error)
+                        fallthrough
+                    case .finished:
+                        subsciption?.cancel()
+                        subsciption = nil
+                    }
+                },
+                receiveValue: {
+                    recieveValue($0)
+                    subsciption?.cancel()
+                    subsciption = nil
+                }
+            )
+    }
+}
+
+public func fireAndForget<P, E>(_ publisher: P) -> Void where P: Publisher, P.Failure == E {
+    var subsciption: AnyCancellable?
+    subsciption = publisher
+        .ignoreOutput()
+        .sink(
+            receiveCompletion: { _ in
+                subsciption?.cancel()
+                subsciption = nil
+            },
+            receiveValue: { _ in }
+        )
 }
 
 public func fireAndForget<P, E>(
     _ completion: @escaping (Subscribers.Completion<P.Failure>) -> Void
-) -> (P) -> Void where P: Publisher, P.Output == Void, P.Failure == E {
+) -> (P) -> Void where P: Publisher, P.Failure == E {
     return { publisher in
         var subsciption: AnyCancellable?
         subsciption = publisher
-            .handleEvents(receiveCompletion: { _ in
-                subsciption?.cancel()
-                subsciption = nil
-            })
-            .sink(receiveCompletion: completion, receiveValue: { _ in })
+            .ignoreOutput()
+            .sink(
+                receiveCompletion: {
+                    subsciption?.cancel()
+                    subsciption = nil
+                    completion($0)
+                },
+                receiveValue: { _ in }
+            )
+    }
+}
+
+public func run<P, T, E>(
+    _ recieveValue: @escaping (T) -> Void,
+    _ recieveError: ((P.Failure) -> Void)? = nil
+) -> (P) -> Void where P: Publisher, P.Output == T, P.Failure == E {
+    return { publisher in
+        var subsciption: AnyCancellable?
+        subsciption = publisher
+            .sink(
+                receiveCompletion: { competion in
+                    switch(competion) {
+                    case .finished:
+                        subsciption?.cancel()
+                        subsciption = nil
+                    case let .failure(error):
+                        recieveError?(error)
+                    }
+                },
+                receiveValue: recieveValue
+            )
     }
 }
 

@@ -20,8 +20,16 @@
 
 import Foundation
 
-// MARK: - Monoid Definition
-
+/// Monoid procotol declaration
+///
+/// Reducing extra syntax
+///
+/// ## Usage
+/// ```
+///   extention Int: Monoid {
+///     static var empty: Self { 0 }
+///   }
+/// ```
 public protocol Monoid: Semigroup {
     static var empty: Self { get }
 }

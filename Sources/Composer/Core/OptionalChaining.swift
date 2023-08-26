@@ -27,6 +27,10 @@ precedencegroup OptionalChainingPrecedence {
 
 infix operator <?> : OptionalChainingPrecedence
 
+/// Optional chaingin operator
+///
+/// ## Usage
+///
 public func <?> <A, B, C> (_ a2b: @escaping (A) -> B, _ b2c: @escaping (B) -> C) -> (A?) -> C? {
     return { $0
         .map(a2b)
